@@ -110,3 +110,4 @@ src/gui/static/dist
 
 *.iml
 *.test
+*debug
