@@ -17,7 +17,6 @@ func main() {
 		Send().
 		ExpectStatus(200).
 		ExpectContent("seed")
-		//ExpectJsonLength("seed", 0) type assertion to []interface{} failed
 
 	//Test 2
 	frisby.Create("Create Wallet").

@@ -13,9 +13,12 @@ before_install:
 
 install:
   - go get -v github.com/skycoin/skycoin/...
-
+  - go get -u github.com/verdverm/frisby
 script:
   - go build cmd/skycoin/skycoin.go
+  - nohup ./run.sh -launch-browser=false > /dev/null 2>&1 &
+  - sleep 120
+  - go run cmd/apitest/simpleTest.go
 
 notifications:
   email: false
