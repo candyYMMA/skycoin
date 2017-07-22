@@ -5,6 +5,7 @@ import (
 	//	"github.com/bitly/go-simplejson"
 	"reflect"
 
+	simplejson "github.com/bitly/go-simplejson"
 	"github.com/verdverm/frisby"
 )
 
@@ -32,14 +33,24 @@ func main() {
 		ExpectJsonType("meta.tm", reflect.String).
 		ExpectJsonType("meta.type", reflect.String).
 		ExpectJsonType("meta.version", reflect.String).
-		// Expect(func(F *frisby.Frisby) (bool, string) {
-		// 	frisby.Frisby.
-		// 	return true, ""
-		// }).
-		// AfterJson(func(F *frisby.Frisby, json *simplejson.Json, err error) {
-		// 	val, _ := json.Get("meta").String()
-		// 	fmt.Println("url =", val)
-		// }).
+		AfterJson(func(F *frisby.Frisby, json *simplejson.Json, err error) {
+			entries := json.Get("entries").GetIndex(0)
+			addressType := entries.Get("address").Interface()
+			publicKeyType := entries.Get("public_key").Interface()
+			secretKeyType := entries.Get("secret_key").Interface()
+			if reflect.ValueOf(addressType).Kind() != reflect.String {
+				errStr := fmt.Sprintf("Expect Json %q type to be %q, but got %T", "entries.address", reflect.String, addressType)
+				F.AddError(errStr)
+			}
+			if reflect.ValueOf(publicKeyType).Kind() != reflect.String {
+				errStr := fmt.Sprintf("Expect Json %q type to be %q, but got %T", "entries.public_key", reflect.String, publicKeyType)
+				F.AddError(errStr)
+			}
+			if reflect.ValueOf(secretKeyType).Kind() != reflect.String {
+				errStr := fmt.Sprintf("Expect Json %q type to be %q, but got %T", "entries.secret_key", reflect.String, secretKeyType)
+				F.AddError(errStr)
+			}
+		}).
 		ExpectJsonLength("entries", 1)
 
 	frisby.Global.PrintReport()
